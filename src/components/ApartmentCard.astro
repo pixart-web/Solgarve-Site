@@ -1,0 +1,33 @@
+---
+import Photo from './Photo.astro';
+import { apartmentUrl, type Apartment } from '../data/content';
+import { type Lang } from '../data/site';
+interface Props {
+  apartment: Apartment;
+  lang: Lang;
+  index?: number;
+}
+const { apartment: a, lang, index = 0 } = Astro.props;
+---
+
+<article class="apartment-card" data-reveal>
+  <a
+    class="photo-link"
+    href={apartmentUrl(lang, a)}
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <Photo id={a.image} lang={lang} />
+    <span class="photo-label">0{index + 1} / T1</span>
+  </a>
+  <div class="apartment-meta">
+    <span>{a.capacity[lang]}</span>
+    <span>{lang === 'pt' ? '1 quarto' : '1 bedroom'}</span>
+  </div>
+  <h3>
+    <a href={apartmentUrl(lang, a)}>
+      {a.short[lang]} <span aria-hidden="true">↗</span>
+    </a>
+  </h3>
+  <p>{a.title[lang]}</p>
+</article>

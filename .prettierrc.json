@@ -1,0 +1,23 @@
+{
+  "plugins": [
+    "prettier-plugin-astro"
+  ],
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    },
+    {
+      "files": [
+        "scripts/browser-qa.mjs",
+        "scripts/accessibility-qa.mjs"
+      ],
+      "options": {
+        "semi": false
+      }
+    }
+  ]
+}

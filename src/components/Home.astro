@@ -1,0 +1,225 @@
+---
+import { copy, url, type Lang } from '../data/site';
+import { apartments, apartmentNote, destinations } from '../data/content';
+import Photo from './Photo.astro';
+import ApartmentCard from './ApartmentCard.astro';
+import ContactPanel from './ContactPanel.astro';
+import Icon from './Icon.astro';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = copy[lang];
+---
+
+<section class="hero">
+  <Photo id="pool" lang={lang} class="hero-image" sizes="100vw" priority />
+  <div class="hero-shade"></div>
+  <div class="container hero-content">
+    <p class="eyebrow">QUARTEIRA · ALGARVE</p>
+    <h1>
+      {lang === 'pt' ? (
+        <>
+          O Algarve,
+          <br />
+          <em>ao seu ritmo.</em>
+        </>
+      ) : (
+        <>
+          The Algarve,
+          <br />
+          <em>at your own pace.</em>
+        </>
+      )}
+    </h1>
+    <p>{t.intro}</p>
+    <div class="hero-buttons">
+      <a class="button button-light" href={url(lang, 'apartments')}>
+        {t.apartments}
+        <span aria-hidden="true">↗</span>
+      </a>
+      <a class="text-link light" href={url(lang, 'gallery')}>
+        {t.gallery}
+      </a>
+    </div>
+  </div>
+  <div class="hero-bottom container">
+    <span>
+      {lang === 'pt'
+        ? 'Um lugar para se sentir de férias.'
+        : 'A place to feel on holiday.'}
+    </span>
+    <a href="#intro" aria-label={t.discover}>
+      ↓
+    </a>
+  </div>
+</section>
+<section id="intro" class="container section intro">
+  <div data-reveal>
+    <h2>{t.introTitle}</h2>
+    <p>{t.introText}</p>
+    <a class="text-link" href={url(lang, 'services')}>
+      {t.discover} <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+  <div class="intro-photos" data-reveal>
+    <figure>
+      <Photo id="balcony" lang={lang} />
+      <figcaption>
+        {lang === 'pt'
+          ? 'Quarteira, Algarve. Simplesmente aqui.'
+          : 'Quarteira, Algarve. Simply here.'}
+      </figcaption>
+    </figure>
+    <Photo
+      id="terrace"
+      lang={lang}
+      class="intro-small"
+      sizes="(max-width:767px) 45vw, 22vw"
+    />
+  </div>
+</section>
+<section class="apartments-section section">
+  <div class="container">
+    <div class="section-heading" data-reveal>
+      <h2>
+        {lang === 'pt'
+          ? 'O seu espaço no Algarve.'
+          : 'Your own space in the Algarve.'}
+      </h2>
+      <p>
+        {lang === 'pt'
+          ? 'A liberdade de um apartamento. A leveza de estar de férias. Escolha a configuração que faz sentido para si.'
+          : 'The freedom of an apartment. The ease of being on holiday. Find the configuration that suits you.'}
+      </p>
+    </div>
+    <div class="apartment-grid">
+      {apartments.map((apartment, index) => (
+        <ApartmentCard apartment={apartment} lang={lang} index={index} />
+      ))}
+    </div>
+    <p class="fine-note">{apartmentNote[lang]}</p>
+  </div>
+</section>
+<section class="pool-section container section">
+  <div class="pool-heading" data-reveal>
+    <p class="eyebrow">{lang === 'pt' ? 'AO AR LIVRE' : 'OUT IN THE OPEN'}</p>
+    <h2>
+      {lang === 'pt' ? (
+        <>
+          Os dias sabem
+          <br />
+          melhor <em>ao sol.</em>
+        </>
+      ) : (
+        <>
+          Days feel better
+          <br />
+          <em>in the sunshine.</em>
+        </>
+      )}
+    </h2>
+    <p>
+      {lang === 'pt'
+        ? 'Um mergulho, um livro, uma pausa. Piscinas separadas para adultos e crianças, com espaço à volta para aproveitar o dia.'
+        : 'A swim, a book, a little pause. Separate pools for adults and children, with room around them to enjoy the day.'}
+    </p>
+  </div>
+  <Photo
+    id="balcony"
+    lang={lang}
+    class="pool-panorama"
+    sizes="(max-width:767px) 100vw, 65vw"
+  />
+</section>
+<section class="amenities-section">
+  <div class="container section">
+    <h2>
+      {lang === 'pt'
+        ? 'O essencial para dias leves.'
+        : 'The little things for easy days.'}
+    </h2>
+    <div class="amenity-highlights">
+      {(lang === 'pt'
+        ? [
+            ['01', 'Piscinas', 'Para adultos e crianças'],
+            ['02', 'Cozinha equipada', 'Ao seu próprio ritmo'],
+            ['03', 'Varanda', 'Virada para a piscina'],
+            ['04', 'Wi-Fi gratuito', 'Na receção e no bar'],
+          ]
+        : [
+            ['01', 'Swimming pools', 'For adults and children'],
+            ['02', 'Equipped kitchen', 'At your own pace'],
+            ['03', 'Balcony', 'Facing the pool'],
+            ['04', 'Free Wi-Fi', 'In reception and the bar'],
+          ]
+      ).map(([, title, description], i) => (
+        <div data-reveal>
+          <Icon name={(['pool', 'kitchen', 'balcony', 'wifi'] as const)[i]} />
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
+      ))}
+    </div>
+    <a class="text-link" href={url(lang, 'services')}>
+      {lang === 'pt' ? 'Conhecer os serviços' : 'Explore the services'}{' '}
+      <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>
+<section class="container section region-teaser">
+  <Photo id="beach" lang={lang} sizes="(max-width:767px) 100vw, 50vw" />
+  <div data-reveal>
+    <h2>
+      {lang === 'pt' ? (
+        <>
+          Lá fora,
+          <br />
+          há mais <em>Algarve.</em>
+        </>
+      ) : (
+        <>
+          Outside,
+          <br />
+          more <em>Algarve awaits.</em>
+        </>
+      )}
+    </h2>
+    <p>
+      {lang === 'pt'
+        ? 'Da marginal de Quarteira às ruas de Loulé, há sempre um motivo para sair e descobrir. Sem pressas, nem planos complicados.'
+        : 'From Quarteira’s promenade to the streets of Loulé, there is always a reason to wander. No rush, no complicated plans.'}
+    </p>
+    <div class="region-links">
+      {destinations.slice(0, 3).map((d) => (
+        <a href={`${url(lang, 'region')}#${d.name.toLowerCase()}`}>
+          {d.name}
+          <span aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+    <a class="text-link" href={url(lang, 'region')}>
+      {t.region} <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>
+<section class="gallery-teaser section">
+  <div class="container">
+    <h2>
+      {lang === 'pt'
+        ? 'Um olhar antes de chegar.'
+        : 'A little look before you arrive.'}
+    </h2>
+    <div class="teaser-grid">
+      {(['bedroom', 'terrace', 'living', 'kitchen'] as const).map((id) => (
+        <a href={url(lang, 'gallery')} aria-label={t.gallery}>
+          <Photo id={id} lang={lang} sizes="(max-width:767px) 50vw, 25vw" />
+        </a>
+      ))}
+    </div>
+    <a class="text-link" href={url(lang, 'gallery')}>
+      {t.gallery} <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>
+<ContactPanel lang={lang} />

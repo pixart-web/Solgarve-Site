@@ -1,0 +1,18 @@
+SOLGARVE — solgarve.pixart.pt
+
+1. No painel do alojamento, abra a pasta raiz atribuída ao subdomínio solgarve.pixart.pt.
+2. Carregue solgarve-pixart-upload.zip nessa pasta e extraia o seu conteúdo diretamente aí.
+3. index.html, 404.html, robots.txt, sitemap.xml, .htaccess e as pastas pt, en, images e _astro devem ficar na raiz do subdomínio, sem uma pasta dist ou outra pasta adicional.
+4. Se existir uma página de exemplo index.php, renomeie-a ou retire-a da pasta do subdomínio para evitar que seja apresentada em lugar do site. Preserve ficheiros do alojamento, incluindo .well-known.
+5. Ative o certificado SSL/HTTPS para solgarve.pixart.pt no painel do alojamento.
+6. Abra https://solgarve.pixart.pt/ e teste o menu, a galeria e o seletor PT/EN.
+7. Depois da extração, retire o ZIP da pasta pública. Não é preciso instalar Node, npm ou base de dados no servidor.
+
+Este é um site estático já compilado. Os URLs canónicos, hreflang, sitemap e dados estruturados usam https://solgarve.pixart.pt. Os links internos são relativos à raiz do subdomínio. Os contactos telefónicos e geral@solgarve.pt mantêm os dados reais da Solgarve.
+
+Compatibilidade: alojamento estático convencional. O .htaccess incluído configura a raiz e a página 404 em Apache/LiteSpeed com overrides permitidos. Em Nginx/IIS/outros, o ficheiro é ignorado; pedir ao alojamento para servir index.html como índice e /404.html com estado HTTP 404. O encaminhamento inicial também existe em HTML.
+
+ESTADO DE REVISÃO
+O site está funcional, mas mantém noindex e robots.txt a bloquear indexação. Os textos de privacidade/cookies estão assinalados como rascunhos. Direitos das fotografias, condições de serviços e ligações de reclamações/RAL precisam de validação antes do lançamento institucional. O bloqueio de indexação não torna o site privado.
+
+Não foi feito upload, deploy, alteração de DNS ou alteração ao site solgarve.pt pelo assistente. A configuração real do seu alojamento só poderá ser confirmada após o upload.

@@ -1,0 +1,68 @@
+{
+  "pool": {
+    "width": 1024,
+    "height": 680,
+    "widths": [400, 720, 1024],
+    "file": "15335547.jpg"
+  },
+  "bedroom": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3936-003.jpg"
+  },
+  "bedroom2": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3937-002.jpg"
+  },
+  "bedroom3": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3941-012.jpg"
+  },
+  "living": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3942-013.jpg"
+  },
+  "kitchen": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3944-011.jpg"
+  },
+  "bathroom": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3943-004.jpg"
+  },
+  "balcony": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3940-006.jpg"
+  },
+  "terrace": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3984-007.jpg"
+  },
+  "reception": {
+    "width": 1200,
+    "height": 801,
+    "widths": [400, 720, 1200],
+    "file": "3985-010.jpg"
+  },
+  "beach": {
+    "width": 1205,
+    "height": 900,
+    "widths": [400, 720, 1205],
+    "file": "15336227.jpg"
+  }
+}

@@ -1,0 +1,221 @@
+---
+import Photo from './Photo.astro';
+import { photos, type PhotoId } from '../data/content';
+import type { Lang } from '../data/site';
+interface Props {
+  lang: Lang;
+  ids?: PhotoId[];
+  filters?: boolean;
+}
+const {
+  lang,
+  ids = [
+    'pool',
+    'bedroom',
+    'balcony',
+    'living',
+    'terrace',
+    'kitchen',
+    'bedroom2',
+    'bathroom',
+    'bedroom3',
+    'reception',
+  ],
+  filters = false,
+} = Astro.props;
+const categories = [
+  ['all', lang === 'pt' ? 'Todos' : 'All'],
+  ['apartments', lang === 'pt' ? 'Apartamentos' : 'Apartments'],
+  ['pools', lang === 'pt' ? 'Piscinas' : 'Pools'],
+  ['exterior', lang === 'pt' ? 'Exterior' : 'Outdoors'],
+];
+---
+
+<div class="gallery" data-gallery>
+  {filters && (
+    <div
+      class="gallery-filters"
+      aria-label={lang === 'pt' ? 'Filtrar fotografias' : 'Filter photographs'}
+      hidden
+    >
+      {categories.map(([id, label]) => (
+        <button type="button" data-filter={id} aria-pressed={id === 'all'}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )}
+  <div class="gallery-grid">
+    {ids.map((id, index) => (
+      <a
+        class="gallery-item"
+        href={`/images/${id}.jpg`}
+        data-category={photos[id].category}
+        data-index={index}
+        data-caption={photos[id].alt[lang]}
+        aria-label={`${lang === 'pt' ? 'Ampliar' : 'Enlarge'}: ${photos[id].alt[lang]}`}
+      >
+        <Photo id={id} lang={lang} sizes="(max-width: 767px) 100vw, 50vw" />
+        <span class="gallery-plus" aria-hidden="true">
+          +
+        </span>
+        <span class="gallery-caption">{photos[id].alt[lang]}</span>
+      </a>
+    ))}
+  </div>
+  <dialog
+    class="lightbox"
+    aria-label={
+      lang === 'pt' ? 'Visualizador de fotografias' : 'Photograph viewer'
+    }
+  >
+    <div class="lightbox-top">
+      <span data-count aria-live="polite"></span>
+      <button
+        type="button"
+        data-close
+        aria-label={lang === 'pt' ? 'Fechar galeria' : 'Close gallery'}
+      >
+        {lang === 'pt' ? 'Fechar' : 'Close'} <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <figure>
+      <img data-full alt="" />
+      <figcaption data-caption aria-live="polite"></figcaption>
+    </figure>
+    <div class="lightbox-controls">
+      <button
+        type="button"
+        data-prev
+        aria-label={
+          lang === 'pt' ? 'Fotografia anterior' : 'Previous photograph'
+        }
+      >
+        ←
+      </button>
+      <p>
+        {lang === 'pt'
+          ? 'Use as setas para explorar'
+          : 'Use the arrows to explore'}
+      </p>
+      <button
+        type="button"
+        data-next
+        aria-label={lang === 'pt' ? 'Fotografia seguinte' : 'Next photograph'}
+      >
+        →
+      </button>
+    </div>
+  </dialog>
+</div>
+<script>
+  document
+    .querySelectorAll<HTMLElement>('[data-gallery]')
+    .forEach((gallery) => {
+      const links = [
+        ...gallery.querySelectorAll<HTMLAnchorElement>('.gallery-item'),
+      ];
+      const dialog = gallery.querySelector<HTMLDialogElement>('dialog')!;
+      const img = dialog.querySelector<HTMLImageElement>('[data-full]')!;
+      const caption = dialog.querySelector<HTMLElement>('[data-caption]')!;
+      const count = dialog.querySelector<HTMLElement>('[data-count]')!;
+      let current = 0;
+      let visible = links;
+      let opener: HTMLElement | null = null;
+      const show = (index: number) => {
+        current = (index + visible.length) % visible.length;
+        const link = visible[current];
+        img.src = link.href;
+        img.alt = link.dataset.caption || '';
+        caption.textContent = img.alt;
+        count.textContent = `${current + 1} / ${visible.length}`;
+      };
+      links.forEach((link) =>
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          opener = link;
+          show(visible.indexOf(link));
+          dialog.showModal();
+        }),
+      );
+      dialog
+        .querySelector('[data-close]')!
+        .addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => opener?.focus());
+      dialog
+        .querySelector('[data-prev]')!
+        .addEventListener('click', () => show(current - 1));
+      dialog
+        .querySelector('[data-next]')!
+        .addEventListener('click', () => show(current + 1));
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key === 'Tab') {
+          const buttons = [
+            ...dialog.querySelectorAll<HTMLButtonElement>('button'),
+          ];
+          const first = buttons[0],
+            last = buttons[buttons.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          show(current + 1);
+        }
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          show(current - 1);
+        }
+      });
+      let start: { x: number; y: number } | null = null;
+      img.addEventListener(
+        'touchstart',
+        (e) => {
+          start = {
+            x: e.changedTouches[0].clientX,
+            y: e.changedTouches[0].clientY,
+          };
+        },
+        { passive: true },
+      );
+      img.addEventListener(
+        'touchend',
+        (e) => {
+          if (!start) return;
+          const dx = e.changedTouches[0].clientX - start.x,
+            dy = e.changedTouches[0].clientY - start.y;
+          if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5)
+            show(current + (dx < 0 ? 1 : -1));
+          start = null;
+        },
+        { passive: true },
+      );
+      const filters = gallery.querySelector<HTMLElement>('.gallery-filters');
+      if (filters) {
+        filters.hidden = false;
+        filters
+          .querySelectorAll<HTMLButtonElement>('button')
+          .forEach((button) =>
+            button.addEventListener('click', () => {
+              filters
+                .querySelectorAll('button')
+                .forEach((b) =>
+                  b.setAttribute('aria-pressed', String(b === button)),
+                );
+              links.forEach(
+                (link) =>
+                  (link.hidden =
+                    button.dataset.filter !== 'all' &&
+                    link.dataset.category !== button.dataset.filter),
+              );
+              visible = links.filter((l) => !l.hidden);
+            }),
+          );
+      }
+    });
+</script>

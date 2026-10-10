@@ -1,0 +1,20 @@
+# Copy to the server as .htaccess only during an authorized deployment.
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^$ /pt/ [R=302,L]
+# Explicitly mapped legacy content. Verify existing traffic before enabling.
+RewriteRule ^en/apartment/?$ /en/apartments/ [R=301,L]
+RewriteRule ^en/apartment/one-bedroom-apartment-2pax/?$ /en/apartments/one-bedroom-two-guests/ [R=301,L]
+RewriteRule ^en/apartment/one-bedroom-apartment-4pax/?$ /en/apartments/one-bedroom-four-guests/ [R=301,L]
+RewriteRule ^en/apartment/apartment-t1-2-adults-2-children/?$ /en/apartments/one-bedroom-two-adults-two-children/ [R=301,L]
+# The inconsistent fourth configuration has no verified replacement.
+RewriteRule ^en/apartment/one-bedroom-apartment-2pax-2/?$ - [G,L]
+</IfModule>
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+# Keep this for any review/staging server. Remove only after launch approval.
+Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>

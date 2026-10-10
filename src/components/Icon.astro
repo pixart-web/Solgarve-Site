@@ -1,0 +1,16 @@
+---
+import swimming from '../icons/swimming.svg?raw';
+import kitchen from '../icons/tools-kitchen-2.svg?raw';
+import windowIcon from '../icons/window.svg?raw';
+import wifi from '../icons/wifi.svg?raw';
+interface Props {
+  name: 'pool' | 'kitchen' | 'balcony' | 'wifi';
+}
+const icons = { pool: swimming, kitchen, balcony: windowIcon, wifi };
+---
+
+<span
+  class="amenity-icon"
+  aria-hidden="true"
+  set:html={icons[Astro.props.name]}
+/>

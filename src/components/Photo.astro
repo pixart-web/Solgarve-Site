@@ -1,0 +1,44 @@
+---
+import sizesData from '../data/image-sizes.json';
+import { photos, type PhotoId } from '../data/content';
+import type { Lang } from '../data/site';
+interface Props {
+  id: PhotoId;
+  lang: Lang;
+  class?: string;
+  sizes?: string;
+  priority?: boolean;
+}
+const {
+  id,
+  lang,
+  class: className = '',
+  sizes = '(max-width: 767px) 100vw, 50vw',
+  priority = false,
+} = Astro.props;
+const data = sizesData[id],
+  photo = photos[id];
+---
+
+<picture class={className}>
+  <source
+    type="image/avif"
+    srcset={data.widths.map((w) => `/images/${id}-${w}.avif ${w}w`).join(', ')}
+    sizes={sizes}
+  />
+  <source
+    type="image/webp"
+    srcset={data.widths.map((w) => `/images/${id}-${w}.webp ${w}w`).join(', ')}
+    sizes={sizes}
+  />
+  <img
+    src={`/images/${id}.jpg`}
+    alt={photo.alt[lang]}
+    width={data.width}
+    height={data.height}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding="async"
+    style={`object-position:${photo.position}`}
+  />
+</picture>

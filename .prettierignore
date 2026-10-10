@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+output
+assets
+public
+docs/brief.md
+package-lock.json
+# Playwright CLI expects a function expression without leading/trailing semicolons.
+scripts/browser-qa.mjs
+scripts/accessibility-qa.mjs

@@ -1,0 +1,121 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Home from '../../components/Home.astro';
+import PageContent from '../../components/PageContent.astro';
+import {
+  routes,
+  labels,
+  url,
+  copy,
+  type Lang,
+  type PageKey,
+} from '../../data/site';
+import { apartments, apartmentUrl } from '../../data/content';
+export function getStaticPaths() {
+  return (['pt', 'en'] as Lang[]).flatMap((lang) => [
+    ...Object.entries(routes).map(([key, slug]) => ({
+      params: { lang, path: slug[lang] || undefined },
+      props: { lang, page: key as PageKey },
+    })),
+    ...apartments.map((apartment) => ({
+      params: {
+        lang,
+        path: `${routes.apartments[lang]}/${apartment.slug[lang]}`,
+      },
+      props: { lang, page: 'apartments' as PageKey, apartment },
+    })),
+  ]);
+}
+const { lang, page, apartment } = Astro.props;
+const other = lang === 'pt' ? 'en' : 'pt';
+const title = apartment
+  ? apartment.title[lang]
+  : page === 'home'
+    ? copy[lang].hero
+    : labels[page][lang];
+const descriptions: Record<PageKey, Record<Lang, string>> = {
+  home: {
+    pt: 'Conheça a Solgarve em Quarteira: apartamentos T1, piscinas e espaços exteriores para dias tranquilos no Algarve.',
+    en: 'Discover Solgarve in Quarteira: one-bedroom apartments, swimming pools and outdoor spaces for unhurried Algarve days.',
+  },
+  apartments: {
+    pt: 'Conheça as três configurações de ocupação dos apartamentos T1 da Solgarve, com cozinha equipada e varanda.',
+    en: 'Explore three occupancy configurations of Solgarve’s one-bedroom apartments, with equipped kitchens and balconies.',
+  },
+  services: {
+    pt: 'Piscinas, receção, limpeza e serviços mediante pedido na Solgarve. Consulte as condições e zonas de Wi-Fi.',
+    en: 'Pools, reception, cleaning and services on request at Solgarve. Read about conditions and Wi-Fi areas.',
+  },
+  gallery: {
+    pt: 'Fotografias reais da Solgarve: quartos, sala, cozinha, piscinas e espaços exteriores em Quarteira.',
+    en: 'Real photographs of Solgarve: bedrooms, living spaces, kitchens, pools and outdoor areas in Quarteira.',
+  },
+  region: {
+    pt: 'Descubra Quarteira, Vilamoura, o Mercado de Loulé e Aquashow. Ideias para explorar o Algarve a partir da Solgarve.',
+    en: 'Discover Quarteira, Vilamoura, Loulé Market and Aquashow. Ideas for exploring the Algarve from Solgarve.',
+  },
+  contact: {
+    pt: 'Contacte a Solgarve por telefone ou email. Consulte a morada em Quarteira e saiba como chegar.',
+    en: 'Contact Solgarve by telephone or email. Find our address in Quarteira and get directions.',
+  },
+  privacy: {
+    pt: 'Informação de privacidade da versão de revisão do website Solgarve. Rascunho sujeito a validação.',
+    en: 'Privacy information for the Solgarve website review version. Draft subject to validation.',
+  },
+  cookies: {
+    pt: 'Informação sobre cookies e serviços externos na versão de revisão do website Solgarve.',
+    en: 'Information about cookies and external services in the Solgarve website review version.',
+  },
+};
+---
+
+<Layout
+  lang={lang}
+  page={page}
+  title={title}
+  description={
+    apartment ? apartment.description[lang] : descriptions[page][lang]
+  }
+  hero={page === 'home'}
+  equivalent={apartment ? apartmentUrl(other, apartment) : url(other, page)}
+  draft={page === 'privacy' || page === 'cookies'}
+>
+  {page === 'home' ? (
+    <Home lang={lang} />
+  ) : (
+    <PageContent lang={lang} page={page} apartment={apartment} />
+  )}
+  {page !== 'home' && (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: labels.home[lang],
+            item: new URL(url(lang, 'home'), Astro.site).href,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: labels[page][lang],
+            item: new URL(url(lang, page), Astro.site).href,
+          },
+          ...(apartment
+            ? [
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: apartment.title[lang],
+                  item: new URL(apartmentUrl(lang, apartment), Astro.site).href,
+                },
+              ]
+            : []),
+        ],
+      })}
+    />
+  )}
+</Layout>

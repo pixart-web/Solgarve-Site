@@ -1,0 +1,32 @@
+{
+  "name": "solgarve",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "test": "node scripts/verify-build.mjs",
+    "test:browser": "playwright-cli --session solgarve run-code --filename scripts/browser-qa.mjs",
+    "images": "node scripts/prepare-images.mjs"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@tabler/icons": "^3.48.0",
+    "astro": "^7.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/cli": "^0.1.22",
+    "@playwright/test": "^1.63.0",
+    "lighthouse": "^13.5.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3"
+  }
+}

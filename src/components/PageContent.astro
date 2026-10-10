@@ -1,0 +1,415 @@
+---
+import { site, copy, url, labels, type Lang, type PageKey } from '../data/site';
+import {
+  apartments,
+  apartmentNote,
+  serviceGroups,
+  destinations,
+  apartmentUrl,
+  type Apartment,
+} from '../data/content';
+import Photo from './Photo.astro';
+import ApartmentCard from './ApartmentCard.astro';
+import Gallery from './Gallery.astro';
+import ContactPanel from './ContactPanel.astro';
+interface Props {
+  lang: Lang;
+  page: PageKey;
+  apartment?: Apartment;
+}
+const { lang, page, apartment: a } = Astro.props;
+const pt = lang === 'pt';
+const t = copy[lang];
+const headings = {
+  apartments: pt
+    ? 'O seu espaço no Algarve.'
+    : 'Your own space in the Algarve.',
+  services: pt
+    ? 'Pequenos cuidados. Dias mais leves.'
+    : 'Little comforts. Lighter days.',
+  gallery: pt
+    ? 'A Solgarve, por dentro e por fora.'
+    : 'Solgarve, inside and out.',
+  region: pt ? 'O Algarve começa aqui.' : 'Your Algarve starts here.',
+  contact: pt ? 'Estamos por aqui.' : 'We are here for you.',
+  privacy: pt ? 'Privacidade' : 'Privacy',
+  cookies: 'Cookies',
+  home: '',
+};
+const leads = {
+  apartments: pt
+    ? 'Um quarto, uma sala, uma varanda. A liberdade de estar de férias com um espaço só seu.'
+    : 'A bedroom, a living room, a balcony. The freedom of being on holiday with a place of your own.',
+  services: pt
+    ? 'Da primeira conversa na receção ao último mergulho do dia, conheça os serviços da Solgarve.'
+    : 'From your first chat at reception to the last swim of the day, discover the services at Solgarve.',
+  gallery: pt
+    ? 'Entre nos apartamentos, espreite a varanda e descubra os espaços onde os dias passam devagar.'
+    : 'Step inside the apartments, look out from the balcony and discover the spaces where days unfold slowly.',
+  region: pt
+    ? 'Praia, passeios à beira-mar e cidades para conhecer. Quatro ideias para levar consigo.'
+    : 'Beaches, seaside strolls and towns to explore. Four ideas to take with you.',
+  contact: pt
+    ? 'Para saber mais sobre os apartamentos, os serviços ou como chegar, fale diretamente com a nossa equipa.'
+    : 'For more about the apartments, services or how to find us, speak directly to our team.',
+  privacy: '',
+  cookies: '',
+  home: '',
+};
+---
+
+<div class="container breadcrumbs">
+  <a href={url(lang, 'home')}>{labels.home[lang]}</a>
+  <span aria-hidden="true">/</span>
+  {a ? (
+    <>
+      <a href={url(lang, 'apartments')}>{labels.apartments[lang]}</a>
+      <span aria-hidden="true">/</span>
+      <span>{a.capacity[lang]}</span>
+    </>
+  ) : (
+    <span>{labels[page][lang]}</span>
+  )}
+</div>
+<header class="page-heading container">
+  <p class="eyebrow">{a ? 'SOLGARVE · T1' : 'SOLGARVE · QUARTEIRA'}</p>
+  <h1>{a ? a.title[lang] : headings[page]}</h1>
+  {!a && leads[page] && <p>{leads[page]}</p>}
+</header>
+{page === 'apartments' && !a && (
+  <>
+    <section class="container apartment-list">
+      {apartments.map((apartment, index) => (
+        <div class="apartment-row">
+          <ApartmentCard apartment={apartment} lang={lang} index={index} />
+          <div>
+            <p class="section-index">{apartment.capacity[lang]}</p>
+            <h2>{apartment.short[lang]}</h2>
+            <p>{apartment.description[lang]}</p>
+            <a class="text-link" href={apartmentUrl(lang, apartment)}>
+              {pt ? 'Conhecer o apartamento' : 'Explore the apartment'}{' '}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      ))}
+      <p class="fine-note">{apartmentNote[lang]}</p>
+    </section>
+    <ContactPanel lang={lang} />
+  </>
+)}
+{a && (
+  <>
+    <section class="container detail-primary">
+      <Photo
+        id={a.image}
+        lang={lang}
+        sizes="(max-width:767px) 100vw, 65vw"
+        priority
+      />
+      <div>
+        <p class="capacity">{a.capacity[lang]}</p>
+        <h2>{a.short[lang]}</h2>
+        <p>{a.description[lang]}</p>
+        <a class="text-link" href={url(lang, 'contact')}>
+          {t.contact} <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+    <section class="container section detail-spaces">
+      <h2>{pt ? 'Espaço para os seus dias.' : 'Room for your days.'}</h2>
+      <div class="space-grid">
+        {(pt
+          ? [
+              ['Um quarto', 'Quarto com cama de casal e ar condicionado.'],
+              [
+                'Sala e cozinha',
+                'Sala com sofá-cama, zona de refeições e cozinha equipada.',
+              ],
+              ['Casa de banho', 'Uma casa de banho privativa.'],
+              ['Varanda', 'Espaço exterior orientado para a piscina.'],
+            ]
+          : [
+              [
+                'One bedroom',
+                'Bedroom with a double bed and air conditioning.',
+              ],
+              [
+                'Living room and kitchen',
+                'Living room with a sofa bed, dining area and equipped kitchen.',
+              ],
+              ['Bathroom', 'One private bathroom.'],
+              ['Balcony', 'Outdoor space facing the swimming pool.'],
+            ]
+        ).map(([title, text]) => (
+          <div>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </div>
+        ))}
+      </div>
+      <p class="fine-note">
+        {pt
+          ? 'Televisão por satélite no apartamento. Wi-Fi gratuito nas zonas da receção e bar.'
+          : 'Satellite television in the apartment. Free Wi-Fi in reception and bar areas.'}
+      </p>
+    </section>
+    <section class="container section detail-gallery">
+      <h2>{pt ? 'Um pouco mais de perto.' : 'Take a closer look.'}</h2>
+      <Gallery lang={lang} ids={a.gallery} />
+      <p class="fine-note">{apartmentNote[lang]}</p>
+    </section>
+    <section class="question-band">
+      <div class="container">
+        <h2>{pt ? 'Tem alguma questão?' : 'Have a question?'}</h2>
+        <a class="button" href={url(lang, 'contact')}>
+          {t.contact} ↗
+        </a>
+      </div>
+    </section>
+    <section class="container section">
+      <h2>{pt ? 'Outras configurações.' : 'Other configurations.'}</h2>
+      <div class="apartment-grid two">
+        {apartments
+          .filter((item) => item.id !== a.id)
+          .map((apartment, index) => (
+            <ApartmentCard apartment={apartment} lang={lang} index={index} />
+          ))}
+      </div>
+    </section>
+  </>
+)}
+{page === 'services' && (
+  <>
+    <section class="container services-cover">
+      <Photo id="terrace" lang={lang} sizes="100vw" priority />
+    </section>
+    <div class="container services-body">
+      {serviceGroups.map((group, index) => (
+        <section class="service-group section">
+          <div>
+            <span class="section-index">0{index + 1}</span>
+            <h2>{group.title[lang]}</h2>
+          </div>
+          <div class="service-items">
+            {group.items.map((item) => (
+              <article data-reveal>
+                <h3>{item.title[lang]}</h3>
+                <p>{item.text[lang]}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+      <p class="fine-note">
+        {pt
+          ? 'Os horários e serviços indicados estão sujeitos a confirmação pela equipa. Consulte as condições dos serviços adicionais antes de os solicitar.'
+          : 'Published hours and services are subject to confirmation by the team. Please check the conditions of additional services before requesting them.'}
+      </p>
+    </div>
+    <ContactPanel lang={lang} />
+  </>
+)}
+{page === 'gallery' && (
+  <>
+    <section class="container gallery-page">
+      <Gallery lang={lang} filters />
+      <p class="fine-note">
+        {pt
+          ? 'Fotografias reais dos espaços da Solgarve. A disposição dos apartamentos pode variar.'
+          : 'Real photographs of Solgarve spaces. Apartment layouts may vary.'}
+      </p>
+    </section>
+    <ContactPanel lang={lang} />
+  </>
+)}
+{page === 'region' && (
+  <>
+    <section class="container region-cover">
+      <Photo id="beach" lang={lang} sizes="100vw" priority />
+      <p class="fine-note">
+        {pt
+          ? 'Quarteira · Fotografia do arquivo Solgarve'
+          : 'Quarteira · Photograph from the Solgarve archive'}
+      </p>
+    </section>
+    <section class="container destination-list">
+      {destinations.map((d, index) => (
+        <article id={d.name.toLowerCase()} class="destination" data-reveal>
+          <span class="destination-number">0{index + 1}</span>
+          <div>
+            <p class="destination-tag">{d.tag[lang]}</p>
+            <h2>{d.name}</h2>
+          </div>
+          <div>
+            <p>{d.text[lang]}</p>
+            <a
+              class="text-link"
+              href={d.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {pt ? 'Explorar' : 'Explore'} {d.name}{' '}
+              <span aria-hidden="true">↗</span>
+              <span class="sr-only">
+                {pt ? ' (abre num novo separador)' : ' (opens in a new tab)'}
+              </span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </section>
+    <ContactPanel lang={lang} />
+  </>
+)}
+{page === 'contact' && (
+  <>
+    <section class="container contact-details">
+      <div class="contact-lines">
+        <div>
+          <h2>
+            {pt ? 'Uma conversa começa aqui.' : 'A conversation starts here.'}
+          </h2>
+          <a class="email-large" href={`mailto:${site.email}`}>
+            {site.email}
+          </a>
+        </div>
+        {site.phones.map((phone, index) => (
+          <div>
+            <p>
+              {pt
+                ? index
+                  ? 'Telemóvel'
+                  : 'Telefone'
+                : index
+                  ? 'Mobile'
+                  : 'Telephone'}
+            </p>
+            <a class="phone-large" href={`tel:${phone.replaceAll(' ', '')}`}>
+              {phone}
+            </a>
+            <small>
+              {pt
+                ? index
+                  ? 'Chamada para a rede móvel nacional'
+                  : 'Chamada para a rede fixa nacional'
+                : index
+                  ? 'Portuguese mobile network call'
+                  : 'Portuguese landline network call'}
+            </small>
+          </div>
+        ))}
+      </div>
+      <div class="address-panel">
+        <Photo id="reception" lang={lang} priority />
+        <div>
+          <h3>{pt ? 'Encontre-nos em Quarteira.' : 'Find us in Quarteira.'}</h3>
+          <address>
+            {site.address}
+            <br />
+            {site.postal}
+            <br />
+            {site.region}
+          </address>
+          <a
+            class="button"
+            href={site.map}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.directions} ↗
+          </a>
+          <p class="fine-note">
+            {pt
+              ? 'Abre o Google Maps num novo separador.'
+              : 'Opens Google Maps in a new tab.'}
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="container contact-note section">
+      <h2>{pt ? 'Antes de nos visitar.' : 'Before you visit.'}</h2>
+      <p>
+        {pt
+          ? 'Se tem alguma necessidade específica, ou pretende confirmar um serviço, contacte a equipa. Teremos gosto em esclarecer as suas questões.'
+          : 'If you have a specific requirement or would like to confirm a service, please contact the team. We will be happy to answer your questions.'}
+      </p>
+    </section>
+  </>
+)}
+{(page === 'privacy' || page === 'cookies') && (
+  <article class="container legal-copy">
+    <div class="draft-notice">
+      <strong>
+        {pt
+          ? 'Rascunho para revisão — não validado juridicamente'
+          : 'Review draft — not legally validated'}
+      </strong>
+      <p>
+        {pt
+          ? 'Este texto descreve a versão de revisão do website. A identificação do responsável, os fornecedores e a redação final precisam de confirmação antes da publicação.'
+          : 'This text describes the review version of the website. The data controller’s identity, providers and final wording require confirmation before publication.'}
+      </p>
+    </div>
+    {page === 'privacy' ? (
+      <>
+        <h2>{pt ? 'Como funciona este website' : 'How this website works'}</h2>
+        <p>
+          {pt
+            ? 'Este website apresenta os apartamentos e serviços da Solgarve. Não inclui contas de utilizador, pagamentos, formulários de envio ou recolha de dados de estadias. Pode contactar a equipa através do telefone ou do seu próprio serviço de email.'
+            : 'This website presents Solgarve’s apartments and services. It does not include user accounts, payments, submission forms or collection of stay details. You can contact the team by telephone or through your own email service.'}
+        </p>
+        <h2>
+          {pt ? 'Contacto por email e telefone' : 'Email and telephone contact'}
+        </h2>
+        <p>
+          {pt
+            ? 'Ao contactar a equipa, partilha os dados que decidir incluir na conversa ou mensagem. Para questões sobre privacidade, utilize geral@solgarve.pt. A identidade jurídica do responsável, os fundamentos aplicáveis e os períodos de conservação serão incluídos após validação.'
+            : 'When you contact the team, you share the information you choose to include in your conversation or message. For privacy questions, use geral@solgarve.pt. The controller’s legal identity, applicable grounds and retention periods will be added after validation.'}
+        </p>
+        <h2>
+          {pt
+            ? 'Alojamento técnico e ligações externas'
+            : 'Hosting and external links'}
+        </h2>
+        <p>
+          {pt
+            ? 'O alojamento do website pode implicar registos técnicos de acesso. Os fornecedores e condições de tratamento precisam de confirmação para a versão publicada. As ligações para mapas e outros websites só abrem quando as seleciona e seguem as políticas dos respetivos serviços.'
+            : 'Website hosting may involve technical access logs. Providers and processing conditions need to be confirmed for the published version. Maps and other websites open only when you select their links and follow their own service policies.'}
+        </p>
+        <h2>
+          {pt ? 'Validação antes do lançamento' : 'Validation before launch'}
+        </h2>
+        <p>
+          {pt
+            ? 'A informação completa sobre direitos, exercício desses direitos, destinatários e autoridade de controlo deve ser revista pelo responsável antes do lançamento. Este rascunho não substitui essa validação.'
+            : 'Complete information about rights, how to exercise them, recipients and the supervisory authority must be reviewed by the controller before launch. This draft does not replace that validation.'}
+        </p>
+      </>
+    ) : (
+      <>
+        <h2>{pt ? 'Cookies nesta versão' : 'Cookies in this version'}</h2>
+        <p>
+          {pt
+            ? 'Esta implementação não define cookies nem utiliza armazenamento local para acompanhar visitantes. As fotografias e fontes são servidas localmente. Não existem ferramentas de análise, publicidade ou mapas incorporados.'
+            : 'This implementation does not set cookies or use local storage to track visitors. Photographs and fonts are served locally. There are no analytics tools, advertising tools or embedded maps.'}
+        </p>
+        <h2>{pt ? 'Serviços externos' : 'External services'}</h2>
+        <p>
+          {pt
+            ? 'Ao seguir uma ligação externa, passa para outro website, que poderá utilizar cookies segundo as suas próprias condições. Nenhum desses serviços é carregado automaticamente nesta versão.'
+            : 'Following an external link takes you to another website, which may use cookies under its own terms. None of these services is loaded automatically in this version.'}
+        </p>
+        <h2>{pt ? 'Antes da publicação' : 'Before publication'}</h2>
+        <p>
+          {pt
+            ? 'A configuração final do alojamento deve ser verificada. Se forem acrescentados serviços que usem cookies ou tecnologias semelhantes, este texto e os controlos de privacidade terão de ser atualizados.'
+            : 'The final hosting configuration must be checked. If services using cookies or similar technologies are added, this text and the privacy controls will need to be updated.'}
+        </p>
+      </>
+    )}
+    <a class="text-link" href={url(lang, 'contact')}>
+      {t.contact} ↗
+    </a>
+  </article>
+)}

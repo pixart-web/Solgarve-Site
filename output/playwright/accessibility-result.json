@@ -1,0 +1,47 @@
+[
+  {
+    "width": 1440,
+    "route": "/pt/",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "route": "/pt/",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "route": "/pt/apartamentos/",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "route": "/en/apartments/one-bedroom-two-adults-two-children/",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "route": "/pt/servicos/",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "route": "/pt/galeria/",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "route": "/pt/contactos/",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "route": "/en/discover-the-algarve/",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "route": "/pt/privacidade/",
+    "violations": []
+  }
+]

@@ -1,0 +1,275 @@
+---
+import '../styles/global.css';
+import '@fontsource/cormorant-garamond/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-400-italic.css';
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/manrope/latin-400.css';
+import '@fontsource/manrope/latin-600.css';
+import {
+  site,
+  nav,
+  labels,
+  url,
+  copy,
+  type Lang,
+  type PageKey,
+} from '../data/site';
+interface Props {
+  lang: Lang;
+  page?: PageKey;
+  title: string;
+  description: string;
+  hero?: boolean;
+  equivalent?: string;
+  draft?: boolean;
+}
+const {
+  lang,
+  page = 'home',
+  title,
+  description,
+  hero = false,
+  equivalent,
+  draft = false,
+} = Astro.props;
+const t = copy[lang],
+  other = lang === 'pt' ? 'en' : 'pt';
+const production = import.meta.env.PUBLIC_SITE_MODE === 'production';
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-PT' : 'en'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Solgarve</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={production && !draft ? 'index,follow' : 'noindex,nofollow'}
+    />
+    <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      hreflang={lang === 'pt' ? 'pt-PT' : 'en'}
+      href={canonical}
+    />
+    <link
+      rel="alternate"
+      hreflang={other === 'pt' ? 'pt-PT' : 'en'}
+      href={new URL(equivalent || url(other, page), Astro.site).href}
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={
+        new URL(
+          lang === 'pt' ? Astro.url.pathname : equivalent || url('pt', page),
+          Astro.site,
+        ).href
+      }
+    />
+    <meta property="og:title" content={`${title} | Solgarve`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#163B4A" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'LodgingBusiness',
+        name: site.name,
+        url: Astro.site?.href,
+        telephone: site.phones[0],
+        email: site.email,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: site.address,
+          postalCode: '8125-173',
+          addressLocality: 'Quarteira',
+          addressCountry: 'PT',
+        },
+      })}
+    />
+  </head>
+  <body class:list={[hero && 'has-hero']}>
+    <a class="skip" href="#main">
+      {t.skip}
+    </a>
+    <div class="header-sentinel" aria-hidden="true"></div>
+    <header class="site-header">
+      <a
+        class="brand"
+        href={url(lang, 'home')}
+        aria-label={lang === 'pt' ? 'Solgarve — Início' : 'Solgarve — Home'}
+      >
+        <img
+          src="/images/logo.png"
+          width="200"
+          height="135"
+          alt="Solgarve — Apartamentos Turísticos"
+        />
+      </a>
+      <nav
+        id="navigation"
+        aria-label={lang === 'pt' ? 'Navegação principal' : 'Main navigation'}
+      >
+        {nav.map((key) => (
+          <a
+            href={url(lang, key)}
+            aria-current={page === key ? 'page' : undefined}
+          >
+            {labels[key][lang]}
+          </a>
+        ))}
+      </nav>
+      <div class="header-actions">
+        <a
+          class="language"
+          href={equivalent || url(other, page)}
+          lang={other}
+          aria-label={
+            lang === 'pt'
+              ? 'Read this page in English'
+              : 'Ler esta página em português'
+          }
+        >
+          {other.toUpperCase()}
+        </a>
+        <a class="button header-contact" href={url(lang, 'contact')}>
+          {t.contact}
+          <span aria-hidden="true">↗</span>
+        </a>
+        <button
+          class="menu-toggle"
+          aria-expanded="false"
+          aria-controls="navigation"
+          aria-label={t.menu}
+        >
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="footer">
+      <div class="container footer-top">
+        <div>
+          <a class="brand" href={url(lang, 'home')}>
+            <img
+              src="/images/logo.png"
+              width="200"
+              height="135"
+              alt="Solgarve — Apartamentos Turísticos"
+            />
+          </a>
+          <p>{t.footer}</p>
+        </div>
+        <address>
+          {site.address}
+          <br />
+          {site.postal}
+          <br />
+          {site.region}
+          <a href={site.map} target="_blank" rel="noopener noreferrer">
+            {t.directions} ↗
+          </a>
+        </address>
+        <div class="footer-contact">
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.phones.map((p, i) => (
+            <div>
+              <a href={`tel:${p.replaceAll(' ', '')}`}>{p}</a>
+              <small>
+                {lang === 'pt'
+                  ? i
+                    ? 'Chamada para a rede móvel nacional'
+                    : 'Chamada para a rede fixa nacional'
+                  : i
+                    ? 'Portuguese mobile network call'
+                    : 'Portuguese landline network call'}
+              </small>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="container footer-nav">
+        {nav.map((key) => (
+          <a href={url(lang, key)}>{labels[key][lang]}</a>
+        ))}
+      </div>
+      <div class="container footer-bottom">
+        <span>
+          © {new Date().getFullYear()} Solgarve · RNET {site.registration}
+        </span>
+        <div>
+          <a href={url(lang, 'privacy')}>{labels.privacy[lang]}</a>
+          <a href={url(lang, 'cookies')}>Cookies</a>
+          <a href={equivalent || url(other, page)} lang={other}>
+            {other === 'en' ? 'English' : 'Português'}
+          </a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const header = document.querySelector('header')!;
+      const sentinel = document.querySelector('.header-sentinel')!;
+      new IntersectionObserver(([entry]) =>
+        header.classList.toggle('scrolled', !entry.isIntersecting),
+      ).observe(sentinel);
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
+      const navigation = document.querySelector<HTMLElement>('#navigation')!;
+      const menuLabel =
+        document.documentElement.lang === 'pt-PT' ? 'Abrir menu' : 'Open menu';
+      const closeLabel =
+        document.documentElement.lang === 'pt-PT'
+          ? 'Fechar menu'
+          : 'Close menu';
+      const closeMenu = () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', menuLabel);
+        header.classList.remove('menu-open');
+      };
+      toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(open));
+        header.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-label', open ? closeLabel : menuLabel);
+        if (open) navigation.querySelector('a')?.focus();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && header.classList.contains('menu-open')) {
+          closeMenu();
+          toggle.focus();
+        }
+      });
+      navigation.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('a')) closeMenu();
+      });
+      document.addEventListener('click', (e) => {
+        if (!header.contains(e.target as Node)) closeMenu();
+      });
+      const motion = matchMedia('(prefers-reduced-motion: reduce)');
+      if (!motion.matches) {
+        const observer = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+              }
+            }),
+          { threshold: 0.08 },
+        );
+        document
+          .querySelectorAll('[data-reveal]')
+          .forEach((el) => observer.observe(el));
+      }
+    </script>
+  </body>
+</html>
